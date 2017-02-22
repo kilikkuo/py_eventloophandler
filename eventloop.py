@@ -80,7 +80,7 @@ class EventHandlerLoop():
         assert interval >= 0.01
         self.timer_interval = interval
 
-    def check_timer(self):
+    def update_timer(self):
         # This function is called periodically every interval seconds.
         # All bound functions with a default time are re-calculated here to make
         # sure they can be called at correct time.
@@ -145,11 +145,11 @@ class EventHandlerObserver(EventHandler):
 
 def _sample_windows():
     evtloop = globals()["__evtloop"]
-    evtloop.check_timer()
+    evtloop.update_timer()
 
 def _sample_unix(signo, frame):
     evtloop = globals()["__evtloop"]
-    evtloop.check_timer()
+    evtloop.update_timer()
 
 def config_sigint_handler():
     # Handle Ctrl+C exception.
@@ -176,7 +176,7 @@ def loop_unix(interval):
     config_sigint_handler()
 
     # NOTE : Calling signal.pause() or not doesn't seem to matter here.
-    #        We're only calling evtloop.check_timer() in main thread
+    #        We're only calling evtloop.update_timer() in main thread
     #        when this thread wakes up
     signal.pause()
 
@@ -201,7 +201,7 @@ def run_eventloop_untill_keyboard_interrupt(func_once):
     assert not eventloop_started, "Should not run this twice !!"
     eventloop_started = True
 
-    # Make evtloop.check_timer() is called every 0.01s
+    # Make evtloop.update_timer() is called every 0.01s
     interval = 0.01
     evtloop = globals()["__evtloop"]
     evtloop.set_timer_interval(interval)
